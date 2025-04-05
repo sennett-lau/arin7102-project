@@ -9,6 +9,7 @@ from utils.load_data import load_webmd_drug_reviews_dataset
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import nltk
@@ -191,7 +192,8 @@ def main():
     targets = ['EaseofUse', 'Effectiveness', 'Satisfaction', 'UsefulCount']
     
     models = {
-        'LogisticRegression': LogisticRegression(solver='lbfgs', max_iter=1000),
+        'LogisticRegression': LogisticRegression(solver='lbfgs', max_iter=1000, random_state=42),
+        'MLPClassification': MLPClassifier(max_iter=1000, batch_size=1024, random_state=42),
     }
     
     # Create TF-IDF features for all text fields
