@@ -126,3 +126,6 @@ dmypy.json
 # datasets
 src/data/*
 !src/data/.gitkeep
+
+# ds_store
+.DS_Store
