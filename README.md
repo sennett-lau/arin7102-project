@@ -20,7 +20,7 @@ conda activate arin7102-gp
 
 Install packages with commands:
 ```bash
-pip install notebook jupyterlab pandas matplotlib seaborn scikit-learn
+pip install notebook jupyterlab pandas matplotlib seaborn scikit-learn pandas numpy torch transformers scikit-learn tqdm wordcloud nltk 
 ```
 
 ## Datasets
