@@ -20,9 +20,11 @@ from nltk.stem import WordNetLemmatizer
 import torch
 from sentence_transformers import SentenceTransformer
 
+import gensim.downloader as downloader
+
 # Create results directory if it doesn't exist
 current_dir = os.path.dirname(os.path.abspath(__file__))
-results_dir = os.path.join(current_dir, 'results', 'review-pred-innovation')
+results_dir = os.path.join(current_dir, 'results', 'review-pred-innovation-2')
 os.makedirs(results_dir, exist_ok=True)
 
 # Download NLTK resources
@@ -34,7 +36,7 @@ def preprocess_text(text):
     # Convert to lowercase
     text = str(text).lower()
     # Remove special characters and numbers
-    #text = re.sub(r'[^a-zA-Z\s]', '', text)
+    text = re.sub(r'[^a-zA-Z\s]', '', text)
     # Tokenize
     #tokens = word_tokenize(text)
     # Remove stopwords
@@ -44,6 +46,12 @@ def preprocess_text(text):
     #lemmatizer = WordNetLemmatizer()
     #tokens = [lemmatizer.lemmatize(t) for t in tokens]
     return text#' '.join(tokens)
+
+def load_embedding_model():
+    embeddings = downloader.load("glove-wiki-gigaword-200")
+    all_words = list(embeddings.index_to_key)
+    print(f"Loaded vocab size {len(all_words)}")
+    return {word: embedding for word, embedding in zip(all_words, embeddings)}
 
 def train_and_evaluate_model(model, X_train, y_train, X_test, y_test):
     # Measure training time
@@ -193,17 +201,19 @@ def main():
     }
     
     # Create sentence embeddings
-    print("Creating sentence embeddings...")
-    embed_model_full_name = "sentence-transformers/all-mpnet-base-v2" # sentence-transformers/all-MiniLM-L6-v2
-    embed_model_name = embed_model_full_name[embed_model_full_name.find('/') + 1:]
-    embed_file_path = os.path.join(results_dir, f'{embed_model_name}.pt')
-    if os.path.exists(embed_file_path): X_embed = torch.load(embed_file_path, weights_only=False)
-    else:
-        embed_model = SentenceTransformer(embed_model_full_name)
-        X_embed = embed_model.encode(df['processed_reviews'])
-        torch.save(X_embed, embed_file_path)
+    print("Creating glove embeddings...")
+    dictionary = load_embedding_model()
+    embed_list = []
+    for review in df['processed_reviews']:
+        embed, i = np.zeros(200), 0
+        for word in review.split():
+            if word in dictionary:
+                embed += dictionary[word]
+                i += 1
+        embed_list.append(embed / max(1, i))
+    X_embed = np.array(embed_list)
     
-    print(f"X_embed shape: {X_embed.shape}")
+    print(X_embed.shape)
 
     # Train and evaluate models
     results = {}
