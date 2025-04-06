@@ -26,6 +26,7 @@ pip install notebook jupyterlab pandas matplotlib seaborn scikit-learn pandas nu
 ## Datasets
 
 - [WebMD Drug Reviews Dataset](https://www.kaggle.com/datasets/rohanharode07/webmd-drug-reviews-dataset)
+- [Social media + drug review classification](https://drive.google.com/file/d/1bLmyuNYcBjDcEMkcWiFXQQ_3Vj_AZ9tO/view?usp=sharing)
 
 ### Downloading the datasets and weights
 
