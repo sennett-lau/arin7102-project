@@ -114,7 +114,7 @@ def get_top_values(df, column, n=5):
     return df[column].value_counts().head(n)
 
 def main():
-    csv_file = 'webmd.csv'
+    csv_file = './data/webmd.csv'
     available_columns = get_available_columns(csv_file)
     
     while True:
