@@ -196,8 +196,8 @@ def main():
     targets = ['EaseofUse', 'Effectiveness', 'Satisfaction', 'UsefulCount']
     
     models = {
-        'LogisticRegression': LogisticRegression(solver='lbfgs', max_iter=1000, random_state=42),
-        #'MLPClassification': MLPClassifier(max_iter=1000, batch_size=1024, random_state=42),
+        #'LogisticRegression': LogisticRegression(solver='lbfgs', max_iter=1000, random_state=42),
+        'MLPClassification': MLPClassifier(max_iter=1000, batch_size=1024, random_state=42),
     }
     
     # Create sentence embeddings
@@ -213,7 +213,7 @@ def main():
         embed_list.append(embed / max(1, i))
     X_embed = np.array(embed_list)
     
-    print(X_embed.shape)
+    print(f"X_embed shape: {X_embed.shape}")
 
     # Train and evaluate models
     results = {}
