@@ -15,11 +15,18 @@ def clean_text(text):
     text = re.sub(r'[^a-zA-Z\s]', '', text)
     return text
 
+def drug_name(text):
+    text = str(text).lower().strip()           # Convert to lowercase and strip leading/trailing spaces
+    text = re.sub(r'[^a-zA-Z\s]', '_', text)  # Replace non-alphanumeric (except spaces) with underscore
+    text = re.sub(r'\s+', '_', text)          # Replace spaces with underscore
+    text = text.strip('_')                    # Remove leading/trailing underscores
+    return text
+
 def create_wordcloud(text_data, title):
     wordcloud = WordCloud(width=800, height=400,
                          background_color='white',
                          stopwords=set(stopwords.words('english')),
-                         min_font_size=10).generate(text_data)
+                         min_font_size=10, collocations=False).generate(text_data)
     
     plt.figure(figsize=(10, 5))
     plt.imshow(wordcloud, interpolation='bilinear')
@@ -63,6 +70,21 @@ def plot_sentiment(avg_sentiment, title):
     plt.ylabel('Average Score')
     plt.ylim(0, 1)  # Set y-axis limit from 0 to 1
     plt.show()
+
+def analyze_drugs(csv_file, filters=None):
+    df = pd.read_csv(csv_file)
+    
+    if filters:
+        df = apply_filters(df, filters)
+        if len(df) == 0:
+            print("No drug found with the specified filters")
+            return
+        title = "Word Cloud for Drugs with filters: " + ", ".join([f"{k}={v}" for k, v in filters.items()])
+    else:
+        title = "Word Cloud for All Drugs"
+    
+    all_drugs = ' '.join(df['Drug'].apply(drug_name))
+    create_wordcloud(all_drugs, title)
 
 def analyze_reviews(csv_file, filters=None):
     df = pd.read_csv(csv_file)
@@ -114,19 +136,44 @@ def get_top_values(df, column, n=5):
     return df[column].value_counts().head(n)
 
 def main():
-    csv_file = './data/webmd.csv'
+    csv_file = 'webmd.csv'
     available_columns = get_available_columns(csv_file)
     
     while True:
         print("\nWord Cloud Analysis Options:")
-        print("1. Generate word cloud for all reviews")
-        print("2. Generate word cloud with custom filters")
+        print("1. Generate word cloud for drugs")
+        print("2. Generate word cloud for reviews")
         print("3. Exit")
         
         choice = input("Enter your choice (1-3): ")
         
         if choice == '1':
-            analyze_reviews(csv_file)
+            filters = {}
+            print("\nAvailable columns to filter:", ", ".join(available_columns))
+            
+            while True:
+                column = input("Enter column name to filter (or 'done' to finish): ")
+                if column.lower() == 'done':
+                    break
+                if column not in available_columns:
+                    print("Invalid column name. Available columns:", ", ".join(available_columns))
+                    continue
+                
+                # Show top 5 values for the selected column
+                df = pd.read_csv(csv_file)
+                top_values = get_top_values(df, column)
+                print(f"\nTop 5 most frequent values for {column}:")
+                for value, count in top_values.items():
+                    print(f"{value}: {count} occurrences")
+                
+                value = input(f"\nEnter value for {column}: ")
+                filters[column] = value
+            
+            if filters:
+                analyze_drugs(csv_file, filters)
+            else:
+                print("No filters specified, generating word cloud for all drugs")
+                analyze_drugs(csv_file)
         elif choice == '2':
             filters = {}
             print("\nAvailable columns to filter:", ", ".join(available_columns))
@@ -139,7 +186,7 @@ def main():
                     print("Invalid column name. Available columns:", ", ".join(available_columns))
                     continue
                 
-                # Show top 10 values for the selected column
+                # Show top 5 values for the selected column
                 df = pd.read_csv(csv_file)
                 top_values = get_top_values(df, column)
                 print(f"\nTop 5 most frequent values for {column}:")
