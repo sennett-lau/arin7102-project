@@ -361,11 +361,6 @@ const DashboardComponent = ({ isDisplayed }: { isDisplayed: boolean }) => {
   // Define available dashboards
   const dashboards: Dashboard[] = [
     {
-      id: 'mock-conversations',
-      name: 'Mock Conversations',
-      component: <MockConversationDashboard />,
-    },
-    {
       id: 'medicine-price-range',
       name: 'Medicine Price Range',
       component: <MedicinePriceRange />,
@@ -379,6 +374,11 @@ const DashboardComponent = ({ isDisplayed }: { isDisplayed: boolean }) => {
       id: 'word-cloud',
       name: 'Word Cloud Analysis',
       component: <WordCloudDashboard />,
+    },
+    {
+      id: 'mock-conversations',
+      name: 'Conversations Preview',
+      component: <MockConversationDashboard />,
     },
     // Add more dashboards here in the future
   ];

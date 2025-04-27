@@ -48,7 +48,7 @@ const MockConversationDashboard: React.FC = () => {
   return (
     <div className="p-6 h-full overflow-y-auto">
       <div className="mb-6">
-        <h2 className="text-xl font-medium mb-4">Mock Conversation Dashboard</h2>
+        <h2 className="text-xl font-medium mb-4">Conversation Preview</h2>
         
         <div className="mb-4 flex items-center">
           <label htmlFor="conversation-select" className="mr-3">
