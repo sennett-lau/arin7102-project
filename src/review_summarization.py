@@ -246,7 +246,7 @@ def hierarchical_summarization(reviews, max_length=80, min_length=30, max_input_
         categories[category].append(summary)
 
     # Step 3: Summarize each category
-    final_summary = f"### Summary of Cymbalta Reviews\n\n"
+    final_summary = f"\n"
     for category in categories:
         summary_text = summarize_category(categories[category], category, max_length, min_length, max_input_tokens)
         if summary_text:
