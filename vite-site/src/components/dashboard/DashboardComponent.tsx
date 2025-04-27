@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 // Define dashboard types
 interface Dashboard {
@@ -125,6 +125,237 @@ const SalesTrend = () => {
   );
 };
 
+// WordCloudDashboard component
+const WordCloudDashboard = () => {
+  // View types: word clouds or sentiment analysis
+  const [viewType, setViewType] = useState<'wordcloud' | 'sentiment'>('wordcloud');
+  // Drug selection for filtering the word clouds/sentiment
+  const [selectedDrug, setSelectedDrug] = useState<string>('all');
+  // Reference to different sections for quick navigation
+  const wordCloudRef = useRef<HTMLDivElement>(null);
+  const sentimentRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Drugs data
+  const drugs = [
+    { id: 'all', name: 'All Drugs' },
+    { id: 'lexapro', name: 'Lexapro' },
+    { id: 'lisinopril', name: 'Lisinopril' },
+    { id: 'hydrocodone', name: 'Hydrocodone' },
+    { id: 'cymbalta', name: 'Cymbalta' },
+  ];
+  
+  // Gender filters (only for Lexapro)
+  const genderFilters = [
+    { id: 'all', name: 'All' },
+    { id: 'male', name: 'Male' },
+    { id: 'female', name: 'Female' },
+  ];
+  
+  const [selectedGender, setSelectedGender] = useState<string>('all');
+  
+  // Scroll to top when filters change
+  useEffect(() => {
+    containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [viewType, selectedDrug, selectedGender]);
+  
+  // Get image path based on selections
+  const getImagePath = () => {
+    const basePath = `/assets/word-cloud/${viewType === 'wordcloud' ? 'reviews' : 'sentiment'}`;
+    
+    if (selectedDrug === 'all' && viewType === 'wordcloud') {
+      return '/assets/word-cloud/drugs/all_drugs.png';
+    }
+    
+    // Handle gender filters for Lexapro
+    if (selectedDrug === 'lexapro' && selectedGender !== 'all') {
+      return `${basePath}/lexapro_${selectedGender}.png`;
+    }
+    
+    return `${basePath}/${selectedDrug}.png`;
+  };
+  
+  // Scroll to section functions
+  const scrollToWordCloud = () => {
+    wordCloudRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  const scrollToSentiment = () => {
+    sentimentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  // Handle filter changes with auto-scroll to top
+  const handleViewTypeChange = (type: 'wordcloud' | 'sentiment') => {
+    setViewType(type);
+  };
+  
+  const handleDrugChange = (drugId: string) => {
+    setSelectedDrug(drugId);
+    if (drugId !== 'lexapro') {
+      setSelectedGender('all');
+    }
+  };
+  
+  const handleGenderChange = (genderId: string) => {
+    setSelectedGender(genderId);
+  };
+  
+  return (
+    <div className='h-full flex flex-col relative'>
+      {/* Header with filters - Fixed */}
+      <div className='p-4 flex-shrink-0 bg-[#343541] border-b border-[#565869]'>
+        <h3 className='text-xl font-medium mb-3'>Drug Word Cloud Analysis</h3>
+        
+        <div className='flex flex-wrap gap-4 mb-3'>
+          {/* Main Tab Navigation */}
+          <div className='flex items-center'>
+            <span className='text-sm text-[#c5c5d2] mr-2'>View:</span>
+            <div className='flex space-x-1'>
+              <button
+                onClick={() => handleViewTypeChange('wordcloud')}
+                className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                  viewType === 'wordcloud'
+                    ? 'bg-[#444654] text-white'
+                    : 'bg-[#2a2b36] text-[#c5c5d2] hover:bg-[#3a3b47]'
+                }`}
+              >
+                Word Clouds
+              </button>
+              <button
+                onClick={() => handleViewTypeChange('sentiment')}
+                className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                  viewType === 'sentiment'
+                    ? 'bg-[#444654] text-white'
+                    : 'bg-[#2a2b36] text-[#c5c5d2] hover:bg-[#3a3b47]'
+                }`}
+              >
+                Sentiment
+              </button>
+            </div>
+          </div>
+          
+          {/* Drug Selection Filter */}
+          <div className='flex items-center'>
+            <span className='text-sm text-[#c5c5d2] mr-2'>Drug:</span>
+            <div className='flex flex-wrap gap-1'>
+              {drugs.map((drug) => (
+                <button
+                  key={drug.id}
+                  onClick={() => handleDrugChange(drug.id)}
+                  className={`px-2 py-1 rounded-md text-xs transition-colors ${
+                    selectedDrug === drug.id
+                      ? 'bg-[#444654] text-white'
+                      : 'bg-[#2a2b36] text-[#c5c5d2] hover:bg-[#3a3b47]'
+                  }`}
+                >
+                  {drug.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Gender Filter (only for Lexapro) */}
+          {selectedDrug === 'lexapro' && (
+            <div className='flex items-center'>
+              <span className='text-sm text-[#c5c5d2] mr-2'>Gender:</span>
+              <div className='flex flex-wrap gap-1'>
+                {genderFilters.map((gender) => (
+                  <button
+                    key={gender.id}
+                    onClick={() => handleGenderChange(gender.id)}
+                    className={`px-2 py-1 rounded-md text-xs transition-colors ${
+                      selectedGender === gender.id
+                        ? 'bg-[#444654] text-white'
+                        : 'bg-[#2a2b36] text-[#c5c5d2] hover:bg-[#3a3b47]'
+                    }`}
+                  >
+                    {gender.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Navigation Buttons */}
+      <div className='absolute right-4 top-16 transform -translate-y-1/2 flex flex-col space-y-2 z-10'>
+        <button
+          onClick={scrollToWordCloud}
+          className='px-3 py-2 bg-[#444654] rounded-md text-white shadow-lg hover:bg-[#565869] transition-colors text-sm'
+        >
+          Word Cloud
+        </button>
+        <button
+          onClick={scrollToSentiment}
+          className='px-3 py-2 bg-[#444654] rounded-md text-white shadow-lg hover:bg-[#565869] transition-colors text-sm'
+        >
+          Sentiment
+        </button>
+      </div>
+      
+      {/* Content Container - Scrollable */}
+      <div ref={containerRef} className='flex-1 overflow-y-auto'>
+        <div className='p-4 max-w-4xl mx-auto'>
+          {/* Word Cloud Section */}
+          <div ref={wordCloudRef} className='bg-[#444654] rounded-lg overflow-hidden mb-6'>
+            <h4 className='p-2 text-sm font-medium text-[#c5c5d2] bg-[#3a3b47]'>
+              {viewType === 'wordcloud' ? 'Word Cloud Visualization' : 'Sentiment Analysis'}
+            </h4>
+            <div className='p-4 bg-white'>
+              <img src={getImagePath()} alt={`${selectedDrug} ${viewType}`} className='w-full h-auto' />
+            </div>
+          </div>
+          
+          {/* Explanation Section */}
+          <div ref={sentimentRef} className='bg-[#444654] rounded-lg overflow-hidden'>
+            <h4 className='p-2 text-sm font-medium text-[#c5c5d2] bg-[#3a3b47]'>
+              Analysis Explanation
+            </h4>
+            <div className='p-4 text-white'>
+              {viewType === 'wordcloud' ? (
+                <div>
+                  <p className='mb-3'>
+                    Word clouds visually represent the frequency of words in drug reviews. 
+                    The size of each word indicates how frequently it appears in the reviews.
+                  </p>
+                  <p className='mb-3'>
+                    Common words and stopwords (like &quot;the&quot;, &quot;and&quot;, etc.) are removed to focus on meaningful terms.
+                  </p>
+                  <p>
+                    This visualization helps identify common symptoms, side effects, and patient experiences mentioned in relation to{' '}
+                    {selectedDrug === 'all' ? 'all drugs' : selectedDrug}
+                    {selectedDrug === 'lexapro' && selectedGender !== 'all' 
+                      ? ` for ${selectedGender} patients`
+                      : ''}.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className='mb-3'>
+                    Sentiment analysis evaluates the emotional tone of drug reviews, 
+                    categorizing sentiments as positive, negative, or neutral.
+                  </p>
+                  <p className='mb-3'>
+                    The bar chart shows the distribution of sentiment scores for reviews about
+                    {selectedDrug === 'all' ? ' all drugs' : ` ${selectedDrug}`}
+                    {selectedDrug === 'lexapro' && selectedGender !== 'all' 
+                      ? ` from ${selectedGender} patients`
+                      : ''}.
+                  </p>
+                  <p>
+                    This analysis helps understand patient satisfaction and experiences with medications.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const DashboardComponent = ({ isDisplayed }: { isDisplayed: boolean }) => {
   // Define available dashboards
   const dashboards: Dashboard[] = [
@@ -137,6 +368,11 @@ const DashboardComponent = ({ isDisplayed }: { isDisplayed: boolean }) => {
       id: 'sales-trend',
       name: 'Sales Trend',
       component: <SalesTrend />,
+    },
+    {
+      id: 'word-cloud',
+      name: 'Word Cloud Analysis',
+      component: <WordCloudDashboard />,
     },
     // Add more dashboards here in the future
   ];
