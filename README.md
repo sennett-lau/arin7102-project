@@ -13,6 +13,10 @@ Product analysis for pharmacy store, with a Vite based frontend so serve with ch
 
 ### Application
 
+Copy the `flask-api/.env.example` as `flask-api/.env`, please your openai api key to `OPENAI_API_KEY`.
+
+Currently the frontend is using MOCK mode, control it with the `VITE_IS_MOCK` at `/vite-site/.env`, set it to `false` to begin the chat with the api.
+
 Make sure you have installed Docker and Docker Compose, the simply run:
 
 ```
