@@ -56,11 +56,43 @@ const conversation3: MockConversation = {
   ],
 };
 
+// MOCK_CONVERSATION_INDEX = 4: Business operation suggestions
+const conversation4: MockConversation = {
+  messages: [
+    {
+      role: 'user',
+      content: 'Please give me some operation suggestion for this season',
+    },
+    {
+      role: 'assistant',
+      content: `Based on our analysis of current market trends and historical data, here are my operational suggestions for this season:
+
+**Inventory Management**
+- Increase inventory of antihistamines and allergy medications (Zyrtec, Claritin) by 25% as seasonal allergies are predicted to be severe
+- Decrease inventory of cold medications as we're exiting cold/flu season
+- Maintain current inventory levels of pain relievers (Tylenol, Advil) which show consistent demand
+
+**Pricing Strategy**
+- Consider a 5-8% price increase for Lexapro, as demand has remained stable despite market fluctuations
+- Implement a temporary 10% price reduction for Lisinopril to increase market share against competing products
+- Keep Cymbalta pricing stable as it's already positioned competitively in the market
+
+**Marketing & Promotions**
+- Focus on promoting allergy relief products to the 25-45 age demographic, which shows highest seasonal allergy susceptibility
+- Target sleep aids and vitamin supplements to the 50+ age group through dedicated campaigns
+- Promote children's fever reducers and pain medications to parents (30-40 age group) for the upcoming school season
+
+These recommendations should help optimize your operations and increase revenue for the coming season.`,
+    },
+  ],
+};
+
 // Export all conversations indexed
 export const mockConversations: Record<number, MockConversation> = {
   1: conversation1,
   2: conversation2,
   3: conversation3,
+  4: conversation4,
 };
 
 // Function to get a conversation by index
