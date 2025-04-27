@@ -139,3 +139,8 @@ node_modules/
 
 # env
 flask-api/.env
+
+# vite-site
+vite-site/dist
+vite-site/build
+vite-site/.vite
