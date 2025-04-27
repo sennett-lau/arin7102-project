@@ -7,12 +7,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
+  // @ts-expect-error - process is available in Vite config
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
     plugins: [react()],
     server: {
       port: 7100,
+      proxy: {
+        '/api': 'http://flask-api:7101'
+      },
     },
     resolve: {
       alias: {
