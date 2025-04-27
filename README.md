@@ -7,9 +7,23 @@
 
 ## Description
 
-Product analysis for pharmacy store.
+Product analysis for pharmacy store, with a Vite based frontend so serve with chatbot and dashboard feature, Flask based backend as LLM proxy while process data locally with python.
 
 ## Installation
+
+### Application
+
+Make sure you have installed Docker and Docker Compose, the simply run:
+
+```
+docker-compose up -d --build
+```
+
+Project will then start for
+- Vite on http://localhost:7100
+- Flask on http://localhost:7101
+
+### For local data analysis
 
 Setup a virtual environment with [Python 3.10](https://www.python.org/downloads/):
 ```bash
