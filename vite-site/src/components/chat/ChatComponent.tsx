@@ -98,7 +98,7 @@ const ChatComponent = ({ isDisplayed }: { isDisplayed: boolean }) => {
         )}
       </div>
       
-      <div className='border-t border-[#565869] p-4'>
+      <div className={`border-t border-[#565869] p-4 ${isDisplayed ? 'block' : 'hidden'}`}>
         <MessageInput 
           input={input}
           setInput={setInput}
