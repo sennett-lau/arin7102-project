@@ -32,4 +32,32 @@ The server will start on port 7101 (or the port specified in the .env file).
 
 ## API Endpoints
 
-- `GET /api/healthcheck`: Check if the API is running 
+- `GET /api/healthcheck`: Check if the API is running
+- `POST /api/chat`: Send a message to the chatbot
+
+### Chat API Usage
+
+Request body:
+```json
+{
+  "message": "Your message here",
+  "history": [
+    {"role": "user", "content": "Previous user message"},
+    {"role": "assistant", "content": "Previous assistant response"}
+  ]
+}
+```
+
+Response:
+```json
+{
+  "response": "Assistant's response"
+}
+```
+
+## Configuration
+
+Set your OpenAI API key in the `.env` file:
+```
+OPENAI_API_KEY=your_openai_api_key_here
+``` 
