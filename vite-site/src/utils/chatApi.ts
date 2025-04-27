@@ -1,4 +1,55 @@
-// Mock responses for pharmacy-related questions
+// Types for the API request and response
+type ChatMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+};
+
+type ChatRequest = {
+  message: string;
+  history?: ChatMessage[];
+};
+
+type ChatResponse = {
+  response: string;
+};
+
+// This is the API call to communicate with the Flask backend
+export const sendMessage = async (message: string, history?: ChatMessage[]): Promise<string> => {
+  // Check if mock mode is enabled from environment variables
+  const isMock = import.meta.env.VITE_IS_MOCK === 'true';
+  
+  if (isMock) {
+    // Use mock API in development mode
+    return mockSendMessage(message);
+  } else {
+    // This is the real API call to the backend
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:7101';
+      const response = await fetch(`${backendUrl}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          history,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to get response from API: ${response.status}`);
+      }
+      
+      const data: ChatResponse = await response.json();
+      return data.response;
+    } catch (error) {
+      console.error('API call failed:', error);
+      throw error;
+    }
+  }
+};
+
+// Mock responses for pharmacy-related questions in development mode
 const mockResponses: Record<string, string> = {
   default: "I'm a Pharmacy Product Bot. How can I assist you today?",
   greetings: "Hello! I'm here to help with any questions about pharmacy products.",
@@ -18,8 +69,11 @@ const mockResponses: Record<string, string> = {
     "For prescription medications, please consult with your doctor. I can provide general information, but specific medications require a healthcare professional's guidance.",
 };
 
-// Function to pick the most relevant response based on keywords
-const getRelevantResponse = (message: string): string => {
+// Function to pick the most relevant mock response based on keywords
+const mockSendMessage = async (message: string): Promise<string> => {
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  
   const lowerMessage = message.toLowerCase();
   
   if (/hello|hi|hey|greetings/i.test(lowerMessage)) {
@@ -55,44 +109,4 @@ const getRelevantResponse = (message: string): string => {
   }
   
   return mockResponses.default;
-};
-
-// This would be the actual API call in a real implementation
-export const sendMessage = async (message: string): Promise<string> => {
-  // Check if mock mode is enabled from environment variables
-  const isMock = import.meta.env.VITE_IS_MOCK === 'true';
-  
-  if (isMock) {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return getRelevantResponse(message);
-  } else {
-    // This would be the real API call to the backend
-    try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:7101';
-      const response = await fetch(`${backendUrl}/api/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message,
-          // This simulates what a backend calling OpenAI might expect
-          model: 'gpt-3.5-turbo',
-          temperature: 0.7,
-          max_tokens: 150,
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to get response from API');
-      }
-      
-      const data = await response.json();
-      return data.reply;
-    } catch (error) {
-      console.error('API call failed:', error);
-      throw error;
-    }
-  }
 }; 

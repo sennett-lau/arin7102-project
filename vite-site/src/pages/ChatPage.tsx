@@ -9,11 +9,25 @@ type MessageType = {
   timestamp: Date;
 };
 
+// Type for API message history format
+type ChatHistoryMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+};
+
 const ChatPage = () => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'chat' | 'dashboard'>('chat');
+
+  // Convert messages to the format expected by the API
+  const getMessageHistory = (): ChatHistoryMessage[] => {
+    return messages.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.content
+    }));
+  };
 
   const handleSendMessage = async () => {
     if (input.trim() === '') return;
@@ -30,7 +44,11 @@ const ChatPage = () => {
     setIsLoading(true);
     
     try {
-      const response = await sendMessage(input);
+      // Get conversation history for context
+      const history = getMessageHistory();
+      
+      // Call API with current message and history
+      const response = await sendMessage(input, history);
       
       const botMessage: MessageType = {
         id: (Date.now() + 1).toString(),
@@ -94,7 +112,9 @@ const ChatPage = () => {
           <div className='flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#565869]'>
             {messages.length === 0 ? (
               <div className='flex flex-col items-center justify-center h-full'>
-                <h1 className='text-3xl font-medium text-white mb-6'>Pharmacy Product Analytics Bot</h1>
+                <h1 className='text-3xl font-medium text-white mb-6'>
+                  Pharmacy Product Analytics Bot
+                </h1>
                 <p className='text-[#8e8ea0] text-lg mb-8 max-w-md text-center'>
                   Ask questions about pharmacy products and get instant answers.
                 </p>
@@ -114,7 +134,10 @@ const ChatPage = () => {
                   >
                     <p className='whitespace-pre-wrap'>{message.content}</p>
                     <p className='text-xs text-[#8e8ea0] mt-1'>
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {message.timestamp.toLocaleTimeString([], { 
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
                     </p>
                   </div>
                 </div>
