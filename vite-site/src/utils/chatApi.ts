@@ -1,4 +1,6 @@
 // Types for the API request and response
+import { getMockConversation } from './mockConversations';
+
 type ChatMessage = {
   role: 'user' | 'assistant';
   content: string;
@@ -19,8 +21,16 @@ export const sendMessage = async (message: string, history?: ChatMessage[]): Pro
   const isMock = import.meta.env.VITE_IS_MOCK === 'true';
   
   if (isMock) {
-    // Use mock API in development mode
-    return mockSendMessage(message);
+    // Check if mock conversation index is provided
+    const mockConversationIndex = import.meta.env.VITE_MOCK_CONVERSATION_INDEX;
+    
+    if (mockConversationIndex) {
+      // Use specific mock conversation if index is provided
+      return mockConversationSendMessage(message, parseInt(mockConversationIndex));
+    } else {
+      // Use default keyword-based mock responses
+      return mockSendMessage(message);
+    }
   } else {
     // This is the real API call to the backend
     try {
@@ -47,6 +57,23 @@ export const sendMessage = async (message: string, history?: ChatMessage[]): Pro
       throw error;
     }
   }
+};
+
+// Function to use predefined mock conversations
+const mockConversationSendMessage = async (message: string, conversationIndex: number): Promise<string> => {
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+  const mockConversation = getMockConversation(conversationIndex);
+  
+  if (!mockConversation) {
+    return "Sorry, I couldn't find the specific mock conversation.";
+  }
+  
+  // Get the assistant's response from the mock conversation
+  const assistantMessage = mockConversation.messages.find(msg => msg.role === 'assistant');
+  
+  return assistantMessage?.content || "No assistant response found in the mock conversation.";
 };
 
 // Mock responses for pharmacy-related questions in development mode

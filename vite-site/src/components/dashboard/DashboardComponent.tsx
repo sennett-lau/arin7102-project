@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import MockConversationDashboard from './MockConversationDashboard';
 
 // Define dashboard types
 interface Dashboard {
@@ -359,6 +360,11 @@ const WordCloudDashboard = () => {
 const DashboardComponent = ({ isDisplayed }: { isDisplayed: boolean }) => {
   // Define available dashboards
   const dashboards: Dashboard[] = [
+    {
+      id: 'mock-conversations',
+      name: 'Mock Conversations',
+      component: <MockConversationDashboard />,
+    },
     {
       id: 'medicine-price-range',
       name: 'Medicine Price Range',
