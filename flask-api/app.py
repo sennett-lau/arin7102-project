@@ -6,7 +6,7 @@ import openai
 import json
 import ast
 import pandas as pd
-from openai import AsyncOpenAI
+from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
@@ -18,7 +18,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Configure OpenAI
 api_key = os.getenv("OPENAI_API_KEY")
 base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-client = AsyncOpenAI(api_key=api_key,base_url=base_url)
+client = OpenAI(api_key=api_key,base_url=base_url)
 
 # 导入医疗推荐工具
 try:
@@ -43,7 +43,7 @@ def medicine_recommendation(age, condition, sex):
     if medicine_df is not None:
         df = medicine_df
         medicine_recommendation = recommend_medicine(df, age, condition, sex)
-        print("medicine_recommendation==========", medicine_recommendation)
+        #print("medicine_recommendation==========>", medicine_recommendation)
         return json.dumps(medicine_recommendation)
     else:
         return json.dumps({"error": "医疗推荐功能不可用"})
@@ -103,7 +103,7 @@ def chat():
     }
     try:
         data = request.get_json()
-        
+        #print("data==========>",data)
         if not data or 'message' not in data:
             return jsonify({"error": "Missing message parameter"}), 400
         
@@ -128,10 +128,8 @@ def chat():
         
         # Call OpenAI API with tools
         response = client.chat.completions.create(
-            model="deepseek-coder",
             messages=messages,
-            tools=tools,
-            tool_choice="auto"
+            **settings,
         )
         
         assistant_response = response.choices[0].message
@@ -168,11 +166,10 @@ def chat():
             
             # 再次调用API以获取最终响应
             second_response = client.chat.completions.create(
-                model="deepseek-chat",
                 messages=messages,
-                **settings
+                **settings,
             )
-            
+            #print("second_response==========>",second_response)
             assistant_message = second_response.choices[0].message.content
         else:
             assistant_message = assistant_response.content
