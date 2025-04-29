@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  flask-api:
+    build:
+      context: ./flask-api
+      dockerfile: Dockerfile
+    ports:
+      - "7101:7101"
+    environment:
+      - PORT=7101
+    volumes:
+      - ./flask-api:/app
+    networks:
+      - app-network
+
+  vite-site:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./vite-site:/app
+    ports:
+      - "7100:7100"
+    environment:
+      - VITE_BACKEND_URL=http://localhost:7101
+      - VITE_IS_MOCK=false
+    command: sh -c "yarn && yarn dev --host"
+    depends_on:
+      - flask-api
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge 

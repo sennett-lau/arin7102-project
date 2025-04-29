@@ -129,3 +129,18 @@ src/data/*
 
 # ds_store
 .DS_Store
+*/.DS_Store
+*/**/.DS_Store
+
+# node_modules
+node_modules/
+*/node_modules/
+*/**/node_modules/
+
+# env
+flask-api/.env
+
+# vite-site
+vite-site/dist
+vite-site/build
+vite-site/.vite
