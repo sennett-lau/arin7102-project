@@ -12,8 +12,8 @@ def load_webmd_data():
         # 尝试从工作目录或上级目录读取数据
         if os.path.exists("webmd.csv"):
             df = pd.read_csv("webmd.csv")
-        elif os.path.exists("../webmd.csv"):
-            df = pd.read_csv("../webmd.csv")
+        elif os.path.exists("../src/data/webmd.csv"):
+            df = pd.read_csv("../src/data/webmd.csv")
         else:
             # 如果找不到实际数据，使用示例数据
             print("警告：未找到webmd.csv数据文件，使用示例数据代替")
